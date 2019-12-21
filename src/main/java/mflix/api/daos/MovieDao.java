@@ -9,7 +9,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Projections.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -118,10 +119,15 @@ public class MovieDao extends AbstractMFlixDao {
    */
   public List<Document> getMoviesByCountry(String... country) {
 
-    Bson queryFilter = new Document();
-    Bson projection = new Document();
-    //TODO> Ticket: Projection - implement the query and projection required by the unit test
+    Bson queryFilter = all("countries", country);
+    Bson projection = fields(include("title"));
+
     List<Document> movies = new ArrayList<>();
+
+    moviesCollection
+            .find(queryFilter)
+            .projection(projection)
+            .into(movies);
 
     return movies;
   }
